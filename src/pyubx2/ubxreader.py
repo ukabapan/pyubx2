@@ -74,7 +74,12 @@ class UBXReader:
     """
     UBXReader class.
     """
-
+    _PARSE_ERRORS = (
+        UBXMessageError, UBXTypeError, UBXParseError, UBXStreamError,
+        nme.NMEAMessageError, nme.NMEATypeError, nme.NMEAParseError, nme.NMEAStreamError,
+        rte.RTCMMessageError, rte.RTCMParseError, rte.RTCMStreamError, rte.RTCMTypeError,
+    )
+  
     def __init__(
         self,
         datastream,
@@ -138,6 +143,11 @@ class UBXReader:
                 f"Invalid stream mode {self._msgmode} - must be 0, 1, 2 or 3"
             )
 
+      self._Mdispatch = {
+            b"\xb5": self._parse_ubx,
+            b"\x24": self._parse_nmea,
+            b"\xd3": self._parse_rtcm3,
+        }
     def __iter__(self):
         """Iterator."""
 
